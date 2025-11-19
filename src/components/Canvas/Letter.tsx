@@ -33,7 +33,16 @@ export const Letter = ({
       className="flex items-center justify-center transition-colors"
     >
       {isSelected && (
-        <div className="absolute inset-0 border-2 border-dashed border-blue-400 rounded-full opacity-50 no-print pointer-events-none w-full h-full scale-150"></div>
+        <div
+          className="absolute border-2 border-dashed border-blue-400 rounded-full opacity-50 no-print pointer-events-none"
+          style={{
+            width: '40px',
+            height: '40px',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+          }}
+        ></div>
       )}
       {letter.char}
     </div>
