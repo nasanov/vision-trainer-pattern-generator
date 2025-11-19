@@ -78,6 +78,17 @@ export const Sidebar = ({
       />
 
       <LetterEditor selectedLetter={selectedLetter} onUpdateLetter={onUpdateLetter} />
+
+      {/* Buy Me a Coffee Button */}
+      <div className="flex justify-center mt-auto pt-4">
+        <a href="https://www.buymeacoffee.com/nurs.asanov" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+            alt="Buy Me A Coffee"
+            style={{ height: '60px', width: '217px' }}
+          />
+        </a>
+      </div>
     </aside>
   );
 };
