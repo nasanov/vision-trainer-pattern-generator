@@ -106,7 +106,7 @@ export const PresetsSection = ({
                     e.stopPropagation();
                     onDeletePreset(preset.name);
                   }}
-                  className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  className="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
                   title="Delete preset"
                 >
                   <X size={14} />

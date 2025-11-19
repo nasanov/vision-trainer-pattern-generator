@@ -3,6 +3,7 @@ import type { Preset, Letter, PageSettings } from '../types';
 import { loadPresetsFromStorage, savePresetsToStorage } from '../utils/storage';
 import { generateGridLetters } from '../generators/gridGenerator';
 import { generateMacDonaldLetters } from '../generators/macDonaldGenerator';
+import { generateHelloWorldLetters } from '../generators/helloWorldGenerator';
 import { DEFAULT_PAGE_SETTINGS } from '../utils/constants';
 
 const getBuiltInPresets = (): Preset[] => [
@@ -22,17 +23,31 @@ const getBuiltInPresets = (): Preset[] => [
     orientation: 'landscape',
     createdAt: new Date().toISOString(),
   },
+  {
+    name: 'Hello World !!!',
+    isBuiltIn: true,
+    letters: generateHelloWorldLetters('landscape'),
+    pageSettings: { ...DEFAULT_PAGE_SETTINGS },
+    orientation: 'landscape',
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 export const usePresets = () => {
   const [presets, setPresets] = useState<Preset[]>(() => {
-    const storedPresets = loadPresetsFromStorage();
-    if (storedPresets && storedPresets.length > 0) {
-      return storedPresets;
-    }
     const builtInPresets = getBuiltInPresets();
-    savePresetsToStorage(builtInPresets);
-    return builtInPresets;
+    const storedPresets = loadPresetsFromStorage();
+
+    if (!storedPresets || storedPresets.length === 0) {
+      savePresetsToStorage(builtInPresets);
+      return builtInPresets;
+    }
+
+    // Merge: keep built-in presets up to date, plus user's custom presets
+    const userPresets = storedPresets.filter(p => !p.isBuiltIn);
+    const mergedPresets = [...builtInPresets, ...userPresets];
+    savePresetsToStorage(mergedPresets);
+    return mergedPresets;
   });
 
   const [isSaving, setIsSaving] = useState(false);
