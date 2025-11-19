@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Printer, Move, Type, Grid, RotateCcw, LayoutTemplate, Palette, Settings, X } from 'lucide-react';
+import { Printer, Move, Type, Grid, RotateCcw, LayoutTemplate, Palette, Settings, X, ScanEye } from 'lucide-react';
 
 const A4_WIDTH_MM = 297;
 const A4_HEIGHT_MM = 210;
@@ -331,7 +331,7 @@ export default function A4Generator() {
       <header className="bg-white shadow-sm p-4 flex justify-between items-center no-print z-10">
         <div className="flex items-center gap-2">
           <div className="bg-blue-600 text-white p-2 rounded-lg">
-            <Printer size={24} />
+            <ScanEye size={24} />
           </div>
           <div>
             <h1 className="font-bold text-xl text-gray-800">Precision Layout Tool</h1>
