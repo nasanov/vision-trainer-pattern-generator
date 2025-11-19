@@ -159,8 +159,16 @@ export const PageSettings = ({
                 type="number"
                 min="1"
                 max="20"
-                value={gridRows}
-                onChange={(e) => onGridRowsChange(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
+                value={gridRows === 0 ? '' : gridRows}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '') {
+                    onGridRowsChange(0);
+                  } else {
+                    const num = parseInt(val);
+                    onGridRowsChange(Math.min(20, Math.max(1, num || 0)));
+                  }
+                }}
                 className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -170,15 +178,23 @@ export const PageSettings = ({
                 type="number"
                 min="1"
                 max="30"
-                value={gridCols}
-                onChange={(e) => onGridColsChange(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
+                value={gridCols === 0 ? '' : gridCols}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '') {
+                    onGridColsChange(0);
+                  } else {
+                    const num = parseInt(val);
+                    onGridColsChange(Math.min(30, Math.max(1, num || 0)));
+                  }
+                }}
                 className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-gray-500">
-              Total: <strong>{gridRows * gridCols}</strong> letters
+              Total: <strong>{gridRows > 0 && gridCols > 0 ? gridRows * gridCols : '—'}</strong> letters
             </span>
             <span className="text-xs text-gray-400">
               Current: {totalLetters}
@@ -186,7 +202,8 @@ export const PageSettings = ({
           </div>
           <button
             onClick={onApplyGridSize}
-            className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+            disabled={gridRows < 1 || gridCols < 1 || gridRows > 20 || gridCols > 30}
+            className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Apply Grid Size
           </button>

@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { Letter, PageSettings } from '../types';
 import { regeneratePattern } from './characterPool';
-import { A4_WIDTH_MM, A4_HEIGHT_MM, CENTER_X, CENTER_Y } from './constants';
+import { getPageDimensions, type Orientation } from './constants';
 
 type PDFGeneratorOptions = {
   numPages: number;
@@ -11,17 +11,21 @@ type PDFGeneratorOptions = {
   showFixation: boolean;
   includeNumbers: boolean;
   allowDuplicates: boolean;
+  orientation?: Orientation;
   onProgress?: (current: number, total: number) => void;
 };
 
 const createCanvasElement = (
   letters: Letter[],
   pageSettings: PageSettings,
-  showFixation: boolean
+  showFixation: boolean,
+  orientation: Orientation = 'landscape'
 ): HTMLDivElement => {
+  const { width, height, centerX, centerY } = getPageDimensions(orientation);
+
   const canvas = document.createElement('div');
-  canvas.style.width = `${A4_WIDTH_MM}mm`;
-  canvas.style.height = `${A4_HEIGHT_MM}mm`;
+  canvas.style.width = `${width}mm`;
+  canvas.style.height = `${height}mm`;
   canvas.style.backgroundColor = pageSettings.bgColor;
   canvas.style.fontFamily = pageSettings.fontFamily;
   canvas.style.color = pageSettings.textColor;
@@ -33,8 +37,8 @@ const createCanvasElement = (
   if (showFixation) {
     const fixation = document.createElement('div');
     fixation.style.position = 'absolute';
-    fixation.style.left = `${CENTER_X}mm`;
-    fixation.style.top = `${CENTER_Y}mm`;
+    fixation.style.left = `${centerX}mm`;
+    fixation.style.top = `${centerY}mm`;
     fixation.style.transform = 'translate(-50%, -50%)';
     fixation.style.width = '4mm';
     fixation.style.height = '4mm';
@@ -72,12 +76,15 @@ export const generateMultiPagePDF = async (
     showFixation,
     includeNumbers,
     allowDuplicates,
+    orientation = 'landscape',
     onProgress,
   } = options;
 
-  // Create PDF in landscape mode
+  const { width, height } = getPageDimensions(orientation);
+
+  // Create PDF with specified orientation
   const pdf = new jsPDF({
-    orientation: 'landscape',
+    orientation,
     unit: 'mm',
     format: 'a4',
   });
@@ -99,7 +106,8 @@ export const generateMultiPagePDF = async (
       const canvasElement = createCanvasElement(
         currentLetters,
         pageSettings,
-        showFixation
+        showFixation,
+        orientation
       );
 
       // Add to DOM temporarily for rendering
@@ -127,7 +135,7 @@ export const generateMultiPagePDF = async (
         pdf.addPage();
       }
 
-      pdf.addImage(imgData, 'PNG', 0, 0, A4_WIDTH_MM, A4_HEIGHT_MM);
+      pdf.addImage(imgData, 'PNG', 0, 0, width, height);
     }
 
     // Generate filename with timestamp

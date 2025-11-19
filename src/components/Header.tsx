@@ -1,4 +1,5 @@
-import { Printer, Grid, RotateCcw, ScanEye, Download } from 'lucide-react';
+import { Printer, Grid, RotateCcw, ScanEye, Download, RotateCw } from 'lucide-react';
+import type { Orientation } from '../utils/constants';
 
 type HeaderProps = {
   showGrid: boolean;
@@ -12,6 +13,8 @@ type HeaderProps = {
   totalLetters?: number;
   gridRows?: number;
   gridCols?: number;
+  orientation?: Orientation;
+  onOrientationChange?: (orientation: Orientation) => void;
 };
 
 export const Header = ({
@@ -26,6 +29,8 @@ export const Header = ({
   totalLetters = 28,
   gridRows = 4,
   gridCols = 7,
+  orientation = 'landscape',
+  onOrientationChange,
 }: HeaderProps) => {
   return (
     <header className="bg-white shadow-sm p-4 flex justify-between items-center no-print z-10">
@@ -36,7 +41,7 @@ export const Header = ({
         <div>
           <h1 className="font-bold text-xl text-gray-800">Precision Layout Tool</h1>
           <p className="text-sm text-gray-500">
-            A4 Landscape • {gridRows}×{gridCols} Grid • {totalLetters} Letters
+            A4 {orientation === 'landscape' ? 'Landscape' : 'Portrait'} • {gridRows}×{gridCols} Grid • {totalLetters} Letters
           </p>
         </div>
       </div>
@@ -51,6 +56,17 @@ export const Header = ({
           <Grid size={18} />
           {showGrid ? 'Hide Grid' : 'Show Grid'}
         </button>
+
+        {onOrientationChange && (
+          <button
+            onClick={() => onOrientationChange(orientation === 'landscape' ? 'portrait' : 'landscape')}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+            title={`Switch to ${orientation === 'landscape' ? 'Portrait' : 'Landscape'}`}
+          >
+            <RotateCw size={18} />
+            {orientation === 'landscape' ? 'Portrait' : 'Landscape'}
+          </button>
+        )}
 
         <div className="flex items-center gap-2 bg-gray-50 rounded-md px-3 py-2">
           <label htmlFor="numCopies" className="text-sm text-gray-600 font-medium">

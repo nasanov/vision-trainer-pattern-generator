@@ -17,6 +17,7 @@ export type Preset = {
   isBuiltIn: boolean;
   letters: Letter[];
   pageSettings: PageSettings;
+  orientation?: 'landscape' | 'portrait';
   createdAt: string;
 };
 

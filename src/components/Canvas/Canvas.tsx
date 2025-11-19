@@ -1,5 +1,5 @@
 import type { Letter as LetterType, PageSettings } from '../../types';
-import { A4_WIDTH_MM, A4_HEIGHT_MM } from '../../utils/constants';
+import { getPageDimensions, type Orientation } from '../../utils/constants';
 import { GridLines } from './GridLines';
 import { FixationPoint } from './FixationPoint';
 import { Letter } from './Letter';
@@ -13,6 +13,7 @@ type CanvasProps = {
   selectedId: number | null;
   isDragging: boolean;
   onLetterMouseDown: (e: React.MouseEvent, id: number, x: number, y: number) => void;
+  orientation?: Orientation;
 };
 
 export const Canvas = ({
@@ -24,21 +25,24 @@ export const Canvas = ({
   selectedId,
   isDragging,
   onLetterMouseDown,
+  orientation = 'landscape',
 }: CanvasProps) => {
+  const { width, height, centerX, centerY } = getPageDimensions(orientation);
+
   return (
     <div
       ref={paperRef}
       className="shadow-2xl relative transition-transform origin-top shrink-0 m-auto"
       style={{
-        width: `${A4_WIDTH_MM}mm`,
-        height: `${A4_HEIGHT_MM}mm`,
+        width: `${width}mm`,
+        height: `${height}mm`,
         backgroundColor: pageSettings.bgColor,
         fontFamily: pageSettings.fontFamily,
         color: pageSettings.textColor,
       }}
     >
       {showGrid && <GridLines color={pageSettings.textColor} />}
-      {showFixation && <FixationPoint color={pageSettings.textColor} />}
+      {showFixation && <FixationPoint color={pageSettings.textColor} centerX={centerX} centerY={centerY} />}
 
       {letters.map((letter) => (
         <Letter

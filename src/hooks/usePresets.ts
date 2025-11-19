@@ -9,15 +9,17 @@ const getBuiltInPresets = (): Preset[] => [
   {
     name: 'Standard Grid',
     isBuiltIn: true,
-    letters: generateGridLetters(),
+    letters: generateGridLetters(4, 7, 'landscape'),
     pageSettings: { ...DEFAULT_PAGE_SETTINGS },
+    orientation: 'landscape',
     createdAt: new Date().toISOString(),
   },
   {
     name: 'MacDonald 1',
     isBuiltIn: true,
-    letters: generateMacDonaldLetters(),
+    letters: generateMacDonaldLetters('landscape'),
     pageSettings: { ...DEFAULT_PAGE_SETTINGS },
+    orientation: 'landscape',
     createdAt: new Date().toISOString(),
   },
 ];
@@ -37,7 +39,7 @@ export const usePresets = () => {
   const [newPresetName, setNewPresetName] = useState('');
   const [saveError, setSaveError] = useState('');
 
-  const savePreset = (letters: Letter[], pageSettings: PageSettings) => {
+  const savePreset = (letters: Letter[], pageSettings: PageSettings, orientation?: 'landscape' | 'portrait') => {
     const trimmedName = newPresetName.trim();
 
     if (!trimmedName) {
@@ -58,6 +60,7 @@ export const usePresets = () => {
       isBuiltIn: false,
       letters: [...letters],
       pageSettings: { ...pageSettings },
+      orientation: orientation || 'landscape',
       createdAt: new Date().toISOString(),
     };
 
@@ -80,11 +83,15 @@ export const usePresets = () => {
     preset: Preset,
     setLetters: (letters: Letter[]) => void,
     setPageSettings: (settings: PageSettings) => void,
-    setSelectedId: (id: number | null) => void
+    setSelectedId: (id: number | null) => void,
+    setOrientation?: (orientation: 'landscape' | 'portrait') => void
   ) => {
     setLetters(preset.letters);
     setPageSettings(preset.pageSettings);
     setSelectedId(null);
+    if (setOrientation) {
+      setOrientation(preset.orientation || 'landscape');
+    }
   };
 
   return {

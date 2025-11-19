@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import type { Letter } from '../types';
 import { regeneratePattern } from '../utils/characterPool';
+import type { Orientation } from '../utils/constants';
 
-export const useLetters = (initialGenerator: (rows?: number, cols?: number) => Letter[]) => {
+export const useLetters = (
+  initialGenerator: (rows?: number, cols?: number, orientation?: Orientation) => Letter[]
+) => {
   const [letters, setLetters] = useState<Letter[]>(initialGenerator);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -28,8 +31,14 @@ export const useLetters = (initialGenerator: (rows?: number, cols?: number) => L
     setSelectedId(null);
   };
 
-  const resizeGrid = (rows: number, cols: number, includeNumbers: boolean, allowDuplicates: boolean) => {
-    const newLetters = initialGenerator(rows, cols);
+  const resizeGrid = (
+    rows: number,
+    cols: number,
+    includeNumbers: boolean,
+    allowDuplicates: boolean,
+    orientation?: Orientation
+  ) => {
+    const newLetters = initialGenerator(rows, cols, orientation);
     const regenerated = regeneratePattern(newLetters, includeNumbers, allowDuplicates);
 
     if (regenerated === null) {

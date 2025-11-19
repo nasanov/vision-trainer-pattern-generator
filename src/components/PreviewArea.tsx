@@ -1,5 +1,6 @@
 import type { Letter, PageSettings } from '../types';
 import { Canvas } from './Canvas/Canvas';
+import type { Orientation } from '../utils/constants';
 
 type PreviewAreaProps = {
   paperRef: React.RefObject<HTMLDivElement | null>;
@@ -10,6 +11,7 @@ type PreviewAreaProps = {
   selectedId: number | null;
   isDragging: boolean;
   onLetterMouseDown: (e: React.MouseEvent, id: number, x: number, y: number) => void;
+  orientation?: Orientation;
 };
 
 export const PreviewArea = ({
@@ -21,6 +23,7 @@ export const PreviewArea = ({
   selectedId,
   isDragging,
   onLetterMouseDown,
+  orientation = 'landscape',
 }: PreviewAreaProps) => {
   return (
     <div className="flex-1 bg-gray-200 overflow-auto relative flex">
@@ -33,6 +36,7 @@ export const PreviewArea = ({
         selectedId={selectedId}
         isDragging={isDragging}
         onLetterMouseDown={onLetterMouseDown}
+        orientation={orientation}
       />
     </div>
   );

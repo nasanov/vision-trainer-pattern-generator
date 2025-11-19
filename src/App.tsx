@@ -8,7 +8,7 @@ import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { PreviewArea } from './components/PreviewArea';
 import { ProgressModal } from './components/ProgressModal';
-import { A4_WIDTH_MM, DEFAULT_PAGE_SETTINGS } from './utils/constants';
+import { DEFAULT_PAGE_SETTINGS, getPageDimensions, type Orientation } from './utils/constants';
 import { generateMultiPagePDF } from './utils/pdfGenerator';
 
 export default function App() {
@@ -24,6 +24,7 @@ export default function App() {
   // Grid dimensions state
   const [gridRows, setGridRows] = useState(4);
   const [gridCols, setGridCols] = useState(7);
+  const [orientation, setOrientation] = useState<Orientation>('landscape');
 
   // PDF generation state
   const [numCopies, setNumCopies] = useState(1);
@@ -68,15 +69,20 @@ export default function App() {
   };
 
   const handleLoadPreset = (preset: typeof presets[0]) => {
-    loadPreset(preset, setLetters, setPageSettings, setSelectedId);
+    loadPreset(preset, setLetters, setPageSettings, setSelectedId, setOrientation);
   };
 
   const handleSavePreset = () => {
-    savePreset(letters, pageSettings);
+    savePreset(letters, pageSettings, orientation);
   };
 
   const handleApplyGridSize = () => {
-    resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates);
+    resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates, orientation);
+  };
+
+  const handleOrientationChange = (newOrientation: Orientation) => {
+    setOrientation(newOrientation);
+    resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates, newOrientation);
   };
 
   const handleDownloadPDF = async () => {
@@ -96,6 +102,7 @@ export default function App() {
         showFixation,
         includeNumbers,
         allowDuplicates,
+        orientation,
         onProgress: (current, total) => {
           setPdfProgress({ current, total });
         },
@@ -127,6 +134,8 @@ export default function App() {
         totalLetters={letters.length}
         gridRows={gridRows}
         gridCols={gridCols}
+        orientation={orientation}
+        onOrientationChange={handleOrientationChange}
       />
 
       <main className="flex-1 flex overflow-hidden">
@@ -173,6 +182,7 @@ export default function App() {
           selectedId={selectedId}
           isDragging={isDragging}
           onLetterMouseDown={handleMouseDown}
+          orientation={orientation}
         />
       </main>
 
@@ -186,7 +196,7 @@ export default function App() {
       <style>{`
         @media print {
           @page {
-            size: landscape;
+            size: ${orientation};
             margin: 0;
           }
           body {
@@ -209,7 +219,9 @@ export default function App() {
             padding: 0 !important;
             display: block !important;
           }
-          div[style*="width: ${A4_WIDTH_MM}mm"] {
+          div[ref="paperRef"],
+          div[style*="width:"],
+          div[style*="height:"] {
             box-shadow: none !important;
             transform: none !important;
             margin: 0 !important;

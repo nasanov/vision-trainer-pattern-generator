@@ -1,7 +1,8 @@
 import type { Letter } from '../types';
-import { CENTER_X, CENTER_Y } from '../utils/constants';
+import { getPageDimensions, type Orientation } from '../utils/constants';
 
-export const generateMacDonaldLetters = (): Letter[] => {
+export const generateMacDonaldLetters = (orientation: Orientation = 'landscape'): Letter[] => {
+  const { centerX, centerY } = getPageDimensions(orientation);
   const letters: Letter[] = [];
   let idCounter = 0;
 
@@ -21,8 +22,8 @@ export const generateMacDonaldLetters = (): Letter[] => {
         letters.push({
           id: idCounter++,
           char: char,
-          x: CENTER_X + steps[index].dX * qx,
-          y: CENTER_Y + steps[index].dY * qy,
+          x: centerX + steps[index].dX * qx,
+          y: centerY + steps[index].dY * qy,
           fontSize: steps[index].size,
         });
       }
@@ -48,8 +49,8 @@ export const generateMacDonaldLetters = (): Letter[] => {
     letters.push({
       id: idCounter++,
       char: c.char,
-      x: CENTER_X + centerOffset * c.x,
-      y: CENTER_Y + centerOffset * c.y,
+      x: centerX + centerOffset * c.x,
+      y: centerY + centerOffset * c.y,
       fontSize: centerSize,
     });
   });

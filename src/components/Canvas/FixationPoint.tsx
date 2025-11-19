@@ -1,16 +1,16 @@
-import { CENTER_X, CENTER_Y } from '../../utils/constants';
-
 type FixationPointProps = {
   color: string;
+  centerX: number;
+  centerY: number;
 };
 
-export const FixationPoint = ({ color }: FixationPointProps) => {
+export const FixationPoint = ({ color, centerX, centerY }: FixationPointProps) => {
   return (
     <div
       style={{
         position: 'absolute',
-        left: `${CENTER_X}mm`,
-        top: `${CENTER_Y}mm`,
+        left: `${centerX}mm`,
+        top: `${centerY}mm`,
         transform: 'translate(-50%, -50%)',
         pointerEvents: 'none',
         zIndex: 5,
