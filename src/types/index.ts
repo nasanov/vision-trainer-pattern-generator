@@ -19,6 +19,10 @@ export type Preset = {
   pageSettings: PageSettings;
   orientation?: 'landscape' | 'portrait';
   createdAt: string;
+  gridLayout?: {
+    rows: number;
+    cols: number;
+  };
 };
 
 export type FontFamilyOption = {

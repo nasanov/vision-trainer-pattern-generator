@@ -25,6 +25,7 @@ export default function App() {
   const [gridRows, setGridRows] = useState(4);
   const [gridCols, setGridCols] = useState(7);
   const [orientation, setOrientation] = useState<Orientation>('landscape');
+  const [isCustomLayout, setIsCustomLayout] = useState(false);
 
   // PDF generation state
   const [numCopies, setNumCopies] = useState(1);
@@ -69,20 +70,25 @@ export default function App() {
   };
 
   const handleLoadPreset = (preset: typeof presets[0]) => {
-    loadPreset(preset, setLetters, setPageSettings, setSelectedId, setOrientation);
+    loadPreset(preset, setLetters, setPageSettings, setSelectedId, setOrientation, setGridRows, setGridCols);
+    setIsCustomLayout(!preset.gridLayout);
   };
 
   const handleSavePreset = () => {
-    savePreset(letters, pageSettings, orientation);
+    // Only include grid layout if both dimensions are set
+    const gridLayout = gridRows && gridCols ? { rows: gridRows, cols: gridCols } : undefined;
+    savePreset(letters, pageSettings, orientation, gridLayout);
   };
 
   const handleApplyGridSize = () => {
     resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates, orientation);
+    setIsCustomLayout(false);
   };
 
   const handleOrientationChange = (newOrientation: Orientation) => {
     setOrientation(newOrientation);
     resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates, newOrientation);
+    setIsCustomLayout(false);
   };
 
   const handleDownloadPDF = async () => {
@@ -136,6 +142,7 @@ export default function App() {
         gridCols={gridCols}
         orientation={orientation}
         onOrientationChange={handleOrientationChange}
+        isCustomLayout={isCustomLayout}
       />
 
       <main className="flex-1 flex overflow-hidden">
