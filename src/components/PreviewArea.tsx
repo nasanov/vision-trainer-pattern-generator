@@ -2,7 +2,7 @@ import type { Letter, PageSettings } from '../types';
 import { Canvas } from './Canvas/Canvas';
 
 type PreviewAreaProps = {
-  paperRef: React.RefObject<HTMLDivElement>;
+  paperRef: React.RefObject<HTMLDivElement | null>;
   pageSettings: PageSettings;
   showGrid: boolean;
   showFixation: boolean;

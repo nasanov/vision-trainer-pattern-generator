@@ -5,7 +5,7 @@ import { FixationPoint } from './FixationPoint';
 import { Letter } from './Letter';
 
 type CanvasProps = {
-  paperRef: React.RefObject<HTMLDivElement>;
+  paperRef: React.RefObject<HTMLDivElement | null>;
   pageSettings: PageSettings;
   showGrid: boolean;
   showFixation: boolean;

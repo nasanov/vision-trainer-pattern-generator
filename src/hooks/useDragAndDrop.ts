@@ -10,7 +10,7 @@ type DragOffset = {
 };
 
 export const useDragAndDrop = (
-  paperRef: React.RefObject<HTMLDivElement>,
+  paperRef: React.RefObject<HTMLDivElement | null>,
   updateLetter: (id: number, field: keyof Letter, value: string | number) => void,
   selectedId: number | null,
   setSelectedId: (id: number | null) => void

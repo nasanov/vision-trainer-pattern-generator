@@ -7,7 +7,9 @@ import { useDragAndDrop } from './hooks/useDragAndDrop';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar/Sidebar';
 import { PreviewArea } from './components/PreviewArea';
+import { ProgressModal } from './components/ProgressModal';
 import { A4_WIDTH_MM, DEFAULT_PAGE_SETTINGS } from './utils/constants';
+import { generateMultiPagePDF } from './utils/pdfGenerator';
 
 export default function App() {
   const paperRef = useRef<HTMLDivElement>(null);
@@ -18,6 +20,11 @@ export default function App() {
   const [showFixation, setShowFixation] = useState(false);
   const [includeNumbers, setIncludeNumbers] = useState(false);
   const [allowDuplicates, setAllowDuplicates] = useState(true);
+
+  // PDF generation state
+  const [numCopies, setNumCopies] = useState(1);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
 
   // Custom hooks
   const { letters, setLetters, selectedId, setSelectedId, updateLetter, regenerate, selectedLetter } =
@@ -64,6 +71,36 @@ export default function App() {
     savePreset(letters, pageSettings);
   };
 
+  const handleDownloadPDF = async () => {
+    if (numCopies < 1 || numCopies > 30) {
+      alert('Please enter a number between 1 and 30 pages.');
+      return;
+    }
+
+    setIsGeneratingPDF(true);
+    setPdfProgress({ current: 0, total: numCopies });
+
+    try {
+      await generateMultiPagePDF({
+        numPages: numCopies,
+        pageSettings,
+        letters,
+        showFixation,
+        includeNumbers,
+        allowDuplicates,
+        onProgress: (current, total) => {
+          setPdfProgress({ current, total });
+        },
+      });
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+      setPdfProgress({ current: 0, total: 0 });
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-gray-100 flex flex-col"
@@ -75,6 +112,10 @@ export default function App() {
         onToggleGrid={() => setShowGrid(!showGrid)}
         onRegeneratePattern={handleRegeneratePattern}
         onPrint={handlePrint}
+        numCopies={numCopies}
+        onNumCopiesChange={setNumCopies}
+        onDownloadPDF={handleDownloadPDF}
+        isGeneratingPDF={isGeneratingPDF}
       />
 
       <main className="flex-1 flex overflow-hidden">
@@ -117,6 +158,12 @@ export default function App() {
           onLetterMouseDown={handleMouseDown}
         />
       </main>
+
+      <ProgressModal
+        isOpen={isGeneratingPDF}
+        current={pdfProgress.current}
+        total={pdfProgress.total}
+      />
 
       {/* Global Styles for Print */}
       <style>{`
