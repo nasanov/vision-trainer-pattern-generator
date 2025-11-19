@@ -27,6 +27,14 @@ const savePresetsToStorage = (presets) => {
   }
 };
 
+// --- CHARACTER POOL HELPER ---
+
+const getCharacterPool = (includeNumbers) => {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const numbers = '0123456789';
+  return includeNumbers ? letters + numbers : letters;
+};
+
 // --- GENERATORS ---
 
 // 1. Default Grid
@@ -121,6 +129,8 @@ export default function A4Generator() {
   const [selectedId, setSelectedId] = useState(null);
   const [showGrid, setShowGrid] = useState(true);
   const [showFixation, setShowFixation] = useState(false);
+  const [includeNumbers, setIncludeNumbers] = useState(false);
+  const [allowDuplicates, setAllowDuplicates] = useState(true);
 
   // Page Style State
   const [pageSettings, setPageSettings] = useState({
@@ -269,6 +279,46 @@ export default function A4Generator() {
     savePresetsToStorage(updatedPresets);
   };
 
+  const regeneratePattern = () => {
+    const characterPool = getCharacterPool(includeNumbers);
+
+    let regeneratedLetters;
+
+    if (allowDuplicates) {
+      // Simple random selection with duplicates allowed
+      regeneratedLetters = letters.map(letter => {
+        const randomChar = characterPool[Math.floor(Math.random() * characterPool.length)];
+        return {
+          ...letter,
+          char: randomChar
+        };
+      });
+    } else {
+      // No duplicates - need to ensure we have enough unique characters
+      if (characterPool.length < letters.length) {
+        alert(`Cannot generate ${letters.length} unique characters. Pool only has ${characterPool.length} characters. Please enable "Allow Duplicates" or "Include Numbers".`);
+        return;
+      }
+
+      // Shuffle the character pool and take first N characters
+      const shuffledPool = characterPool.split('');
+      for (let i = shuffledPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
+      }
+
+      regeneratedLetters = letters.map((letter, index) => {
+        return {
+          ...letter,
+          char: shuffledPool[index]
+        };
+      });
+    }
+
+    setLetters(regeneratedLetters);
+    setSelectedId(null); // Deselect after regeneration
+  };
+
   const selectedLetter = letters.find(l => l.id === selectedId);
 
   return (
@@ -296,6 +346,13 @@ export default function A4Generator() {
           >
             <Grid size={18} />
             {showGrid ? 'Hide Grid' : 'Show Grid'}
+          </button>
+          <button
+            onClick={regeneratePattern}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm transition-colors font-medium"
+          >
+            <RotateCcw size={18} />
+            Regenerate Pattern
           </button>
           <button
             onClick={handlePrint}
@@ -372,6 +429,34 @@ export default function A4Generator() {
                 />
                 <label htmlFor="fixation-toggle" className="text-xs font-medium text-gray-500 cursor-pointer">
                   Center Fixation Point
+                </label>
+              </div>
+
+              {/* Include Numbers Toggle */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="numbers-toggle"
+                  checked={includeNumbers}
+                  onChange={(e) => setIncludeNumbers(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                />
+                <label htmlFor="numbers-toggle" className="text-xs font-medium text-gray-500 cursor-pointer">
+                  Include Numbers
+                </label>
+              </div>
+
+              {/* Allow Duplicates Toggle */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="duplicates-toggle"
+                  checked={allowDuplicates}
+                  onChange={(e) => setAllowDuplicates(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                />
+                <label htmlFor="duplicates-toggle" className="text-xs font-medium text-gray-500 cursor-pointer">
+                  Allow Duplicates
                 </label>
               </div>
             </div>
