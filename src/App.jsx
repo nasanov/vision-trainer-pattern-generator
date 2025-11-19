@@ -1,10 +1,31 @@
 import React, { useState, useRef } from 'react';
-import { Printer, Move, Type, Grid, RotateCcw, LayoutTemplate, Palette, Settings } from 'lucide-react';
+import { Printer, Move, Type, Grid, RotateCcw, LayoutTemplate, Palette, Settings, X } from 'lucide-react';
 
 const A4_WIDTH_MM = 297;
 const A4_HEIGHT_MM = 210;
 const CENTER_X = A4_WIDTH_MM / 2;
 const CENTER_Y = A4_HEIGHT_MM / 2;
+const STORAGE_KEY = 'visionTrainerPresets';
+
+// --- LOCALSTORAGE HELPERS ---
+
+const loadPresetsFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch (error) {
+    console.error('Error loading presets:', error);
+    return null;
+  }
+};
+
+const savePresetsToStorage = (presets) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(presets));
+  } catch (error) {
+    console.error('Error saving presets:', error);
+  }
+};
 
 // --- GENERATORS ---
 
@@ -107,6 +128,44 @@ export default function A4Generator() {
     fontFamily: 'Arial, Helvetica, sans-serif'
   });
 
+  // Presets State - Initialize from localStorage or use defaults
+  const [presets, setPresets] = useState(() => {
+    const storedPresets = loadPresetsFromStorage();
+    if (storedPresets && storedPresets.length > 0) {
+      return storedPresets;
+    }
+    // Initialize with built-in presets
+    const builtInPresets = [
+      {
+        name: 'Standard Grid',
+        isBuiltIn: true,
+        letters: generateGridLetters(),
+        pageSettings: {
+          bgColor: '#FFFFFF',
+          textColor: '#000000',
+          fontFamily: 'Arial, Helvetica, sans-serif'
+        },
+        createdAt: new Date().toISOString()
+      },
+      {
+        name: 'MacDonald 1',
+        isBuiltIn: true,
+        letters: generateMacDonaldLetters(),
+        pageSettings: {
+          bgColor: '#FFFFFF',
+          textColor: '#000000',
+          fontFamily: 'Arial, Helvetica, sans-serif'
+        },
+        createdAt: new Date().toISOString()
+      }
+    ];
+    savePresetsToStorage(builtInPresets);
+    return builtInPresets;
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [newPresetName, setNewPresetName] = useState('');
+  const [saveError, setSaveError] = useState('');
+
   const paperRef = useRef(null);
 
   // Dragging state
@@ -160,10 +219,53 @@ export default function A4Generator() {
     setIsDragging(false);
   };
 
-  const loadPreset = (type) => {
-    if (type === 'Grid') setLetters(generateGridLetters());
-    if (type === 'MacDonald 1') setLetters(generateMacDonaldLetters());
+  const loadPreset = (preset) => {
+    setLetters(preset.letters);
+    setPageSettings(preset.pageSettings);
     setSelectedId(null);
+  };
+
+  const savePreset = () => {
+    const trimmedName = newPresetName.trim();
+
+    // Validate: prevent empty names
+    if (!trimmedName) {
+      setSaveError('Preset name cannot be empty');
+      return;
+    }
+
+    // Validate: prevent duplicates (case-insensitive)
+    const duplicate = presets.find(
+      p => p.name.toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (duplicate) {
+      setSaveError('A preset with this name already exists');
+      return;
+    }
+
+    // Create new preset
+    const newPreset = {
+      name: trimmedName,
+      isBuiltIn: false,
+      letters: [...letters], // Deep copy
+      pageSettings: { ...pageSettings }, // Deep copy
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedPresets = [...presets, newPreset];
+    setPresets(updatedPresets);
+    savePresetsToStorage(updatedPresets);
+
+    // Reset form
+    setIsSaving(false);
+    setNewPresetName('');
+    setSaveError('');
+  };
+
+  const deletePreset = (presetName) => {
+    const updatedPresets = presets.filter(p => p.name !== presetName);
+    setPresets(updatedPresets);
+    savePresetsToStorage(updatedPresets);
   };
 
   const selectedLetter = letters.find(l => l.id === selectedId);
@@ -266,21 +368,92 @@ export default function A4Generator() {
               <LayoutTemplate size={16} className="text-gray-500" />
               Presets
             </h2>
-            <div className="grid grid-cols-1 gap-2">
-              <button
-                onClick={() => loadPreset('MacDonald 1')}
-                className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all group"
-              >
-                <span className="font-medium">MacDonald 1</span>
-                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded group-hover:bg-blue-50 group-hover:text-blue-600">X-Pattern</span>
-              </button>
-              <button
-                onClick={() => loadPreset('Grid')}
-                className="flex items-center justify-between px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all group"
-              >
-                <span className="font-medium">Standard Grid</span>
-                <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded group-hover:bg-blue-50 group-hover:text-blue-600">4x7</span>
-              </button>
+
+            <div className="space-y-3">
+              {/* Save Current Layout Button or Input Form */}
+              {!isSaving ? (
+                <button
+                  onClick={() => setIsSaving(true)}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                >
+                  + Save Current Layout
+                </button>
+              ) : (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={newPresetName}
+                    onChange={(e) => {
+                      setNewPresetName(e.target.value);
+                      setSaveError('');
+                    }}
+                    placeholder="Enter preset name..."
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    autoFocus
+                  />
+                  {saveError && (
+                    <p className="text-xs text-red-600">{saveError}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={savePreset}
+                      className="flex-1 px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsSaving(false);
+                        setNewPresetName('');
+                        setSaveError('');
+                      }}
+                      className="flex-1 px-3 py-1.5 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition-colors text-sm font-medium"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Preset List */}
+              <div className="grid grid-cols-1 gap-2">
+                {presets.map((preset) => (
+                  <div
+                    key={preset.name}
+                    className="relative group"
+                  >
+                    <button
+                      onClick={() => loadPreset(preset)}
+                      className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all"
+                    >
+                      <div className="flex items-center gap-2">
+                        {!preset.isBuiltIn && <span>🌟</span>}
+                        <span className="font-medium">{preset.name}</span>
+                      </div>
+                      {preset.isBuiltIn && preset.name === 'MacDonald 1' && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded group-hover:bg-blue-50 group-hover:text-blue-600">X-Pattern</span>
+                      )}
+                      {preset.isBuiltIn && preset.name === 'Standard Grid' && (
+                        <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded group-hover:bg-blue-50 group-hover:text-blue-600">4x7</span>
+                      )}
+                    </button>
+
+                    {/* Delete button - only for custom presets, shown on hover */}
+                    {!preset.isBuiltIn && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deletePreset(preset.name);
+                        }}
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        title="Delete preset"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
