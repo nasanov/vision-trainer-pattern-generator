@@ -114,18 +114,18 @@ npm run lint
 ### Basic Workflow
 
 1. **Configure Page Settings**: Use the sidebar to adjust font size, family, color, and grid dimensions
-2. **Generate Pattern**: Click the "Regenerate Pattern" button to create a new random pattern
+2. **Generate Pattern**: Click the `Regenerate Pattern` button to create a new random pattern
 3. **Customize Layout**: Drag individual letters to fine-tune positioning
 4. **Save Preset** (Optional): Save your configuration for future use
 5. **Export or Print**:
-   - **PDF Export**: Set the number of copies (1-30) and click "Download PDF" to generate multiple unique patterns
-   - **Print**: Click "Print Layout" or use Ctrl/Cmd + P to print the current pattern
+   - **PDF Export**: Set the number of copies (1-30) and click `Download PDF` to generate multiple unique patterns
+   - **Print**: Click "Print Layout" or use `Ctrl/Cmd + P` to print the current pattern
 
 ### PDF Export Workflow
 
 1. **Configure your pattern**: Set up all desired settings (colors, fonts, fixation point, etc.)
 2. **Set number of copies**: Enter the number of pages you want (1-30) in the "Copies" input field
-3. **Click "Download PDF"**: The generation process will begin
+3. **Click `Download PDF`**: The generation process will begin
 4. **Monitor progress**: A progress modal will show you the current page being generated
 5. **Save your PDF**: Once complete, the PDF will automatically download to your default downloads folder
 
@@ -133,7 +133,7 @@ npm run lint
 
 ### Keyboard Shortcuts
 
-- **Ctrl/Cmd + P**: Print the current pattern
+- **`Ctrl/Cmd + P`**: Print the current pattern
 - **Grid Toggle**: Use the toolbar toggle to show/hide the alignment grid
 
 ### Tips for Best Results
@@ -195,12 +195,8 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ## Support the Project
 
-If you find this tool helpful, consider supporting its development:
+If you find this tool helpful, consider supporting me:
 
 <a href="https://www.buymeacoffee.com/nurs.asanov" target="_blank">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >
 </a>
-
----
-
-Made with ❤️ for vision training enthusiasts
