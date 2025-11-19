@@ -120,6 +120,7 @@ export default function A4Generator() {
   const [letters, setLetters] = useState(generateGridLetters());
   const [selectedId, setSelectedId] = useState(null);
   const [showGrid, setShowGrid] = useState(true);
+  const [showFixation, setShowFixation] = useState(false);
 
   // Page Style State
   const [pageSettings, setPageSettings] = useState({
@@ -359,6 +360,20 @@ export default function A4Generator() {
                   <option value="'Courier New', Courier, monospace">Monospace (Technical)</option>
                 </select>
               </div>
+
+              {/* Center Fixation Point */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="fixation-toggle"
+                  checked={showFixation}
+                  onChange={(e) => setShowFixation(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                />
+                <label htmlFor="fixation-toggle" className="text-xs font-medium text-gray-500 cursor-pointer">
+                  Center Fixation Point
+                </label>
+              </div>
             </div>
           </div>
 
@@ -550,6 +565,43 @@ export default function A4Generator() {
                    }}>
                 {/* Center visual guide for grid mode */}
                 <div className="absolute top-1/2 left-1/2 w-4 h-4 -translate-x-1/2 -translate-y-1/2 border border-red-500 rounded-full opacity-50"></div>
+              </div>
+            )}
+
+            {/* Center Fixation Point */}
+            {showFixation && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: `${CENTER_X}mm`,
+                  top: `${CENTER_Y}mm`,
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                  zIndex: 5
+                }}
+              >
+                {/* Outer circle */}
+                <div
+                  style={{
+                    width: '5mm',
+                    height: '5mm',
+                    border: `1px solid ${pageSettings.textColor}`,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {/* Inner dot */}
+                  <div
+                    style={{
+                      width: '1mm',
+                      height: '1mm',
+                      backgroundColor: pageSettings.textColor,
+                      borderRadius: '50%'
+                    }}
+                  />
+                </div>
               </div>
             )}
 
