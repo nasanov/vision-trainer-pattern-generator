@@ -12,6 +12,12 @@ type SidebarProps = {
   onToggleNumbers: (checked: boolean) => void;
   allowDuplicates: boolean;
   onToggleDuplicates: (checked: boolean) => void;
+  gridRows: number;
+  onGridRowsChange: (rows: number) => void;
+  gridCols: number;
+  onGridColsChange: (cols: number) => void;
+  onApplyGridSize: () => void;
+  totalLetters: number;
   presets: Preset[];
   onLoadPreset: (preset: Preset) => void;
   isSaving: boolean;
@@ -36,6 +42,12 @@ export const Sidebar = ({
   onToggleNumbers,
   allowDuplicates,
   onToggleDuplicates,
+  gridRows,
+  onGridRowsChange,
+  gridCols,
+  onGridColsChange,
+  onApplyGridSize,
+  totalLetters,
   presets,
   onLoadPreset,
   isSaving,
@@ -61,6 +73,12 @@ export const Sidebar = ({
         onToggleNumbers={onToggleNumbers}
         allowDuplicates={allowDuplicates}
         onToggleDuplicates={onToggleDuplicates}
+        gridRows={gridRows}
+        onGridRowsChange={onGridRowsChange}
+        gridCols={gridCols}
+        onGridColsChange={onGridColsChange}
+        onApplyGridSize={onApplyGridSize}
+        totalLetters={totalLetters}
       />
 
       <PresetsSection

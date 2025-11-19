@@ -9,6 +9,9 @@ type HeaderProps = {
   onNumCopiesChange: (value: number) => void;
   onDownloadPDF: () => void;
   isGeneratingPDF: boolean;
+  totalLetters?: number;
+  gridRows?: number;
+  gridCols?: number;
 };
 
 export const Header = ({
@@ -20,6 +23,9 @@ export const Header = ({
   onNumCopiesChange,
   onDownloadPDF,
   isGeneratingPDF,
+  totalLetters = 28,
+  gridRows = 4,
+  gridCols = 7,
 }: HeaderProps) => {
   return (
     <header className="bg-white shadow-sm p-4 flex justify-between items-center no-print z-10">
@@ -29,7 +35,9 @@ export const Header = ({
         </div>
         <div>
           <h1 className="font-bold text-xl text-gray-800">Precision Layout Tool</h1>
-          <p className="text-sm text-gray-500">A4 Landscape • 28 Letters</p>
+          <p className="text-sm text-gray-500">
+            A4 Landscape • {gridRows}×{gridCols} Grid • {totalLetters} Letters
+          </p>
         </div>
       </div>
 

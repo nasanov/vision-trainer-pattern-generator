@@ -11,6 +11,12 @@ type PageSettingsProps = {
   onToggleNumbers: (checked: boolean) => void;
   allowDuplicates: boolean;
   onToggleDuplicates: (checked: boolean) => void;
+  gridRows: number;
+  onGridRowsChange: (rows: number) => void;
+  gridCols: number;
+  onGridColsChange: (cols: number) => void;
+  onApplyGridSize: () => void;
+  totalLetters: number;
 };
 
 export const PageSettings = ({
@@ -22,6 +28,12 @@ export const PageSettings = ({
   onToggleNumbers,
   allowDuplicates,
   onToggleDuplicates,
+  gridRows,
+  onGridRowsChange,
+  gridCols,
+  onGridColsChange,
+  onApplyGridSize,
+  totalLetters,
 }: PageSettingsProps) => {
   return (
     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -133,6 +145,51 @@ export const PageSettings = ({
           >
             Allow Duplicates
           </label>
+        </div>
+
+        {/* Grid Layout */}
+        <div className="mt-4 pt-3 border-t border-gray-300">
+          <label className="block text-xs font-medium text-gray-500 mb-2">
+            Grid Layout
+          </label>
+          <div className="grid grid-cols-2 gap-3 mb-2">
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Rows</label>
+              <input
+                type="number"
+                min="1"
+                max="20"
+                value={gridRows}
+                onChange={(e) => onGridRowsChange(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
+                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Columns</label>
+              <input
+                type="number"
+                min="1"
+                max="30"
+                value={gridCols}
+                onChange={(e) => onGridColsChange(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
+                className="w-full px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-gray-500">
+              Total: <strong>{gridRows * gridCols}</strong> letters
+            </span>
+            <span className="text-xs text-gray-400">
+              Current: {totalLetters}
+            </span>
+          </div>
+          <button
+            onClick={onApplyGridSize}
+            className="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Apply Grid Size
+          </button>
         </div>
       </div>
     </div>

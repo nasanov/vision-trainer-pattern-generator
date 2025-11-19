@@ -21,13 +21,17 @@ export default function App() {
   const [includeNumbers, setIncludeNumbers] = useState(false);
   const [allowDuplicates, setAllowDuplicates] = useState(true);
 
+  // Grid dimensions state
+  const [gridRows, setGridRows] = useState(4);
+  const [gridCols, setGridCols] = useState(7);
+
   // PDF generation state
   const [numCopies, setNumCopies] = useState(1);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
 
   // Custom hooks
-  const { letters, setLetters, selectedId, setSelectedId, updateLetter, regenerate, selectedLetter } =
+  const { letters, setLetters, selectedId, setSelectedId, updateLetter, regenerate, resizeGrid, selectedLetter } =
     useLetters(generateGridLetters);
 
   const {
@@ -69,6 +73,10 @@ export default function App() {
 
   const handleSavePreset = () => {
     savePreset(letters, pageSettings);
+  };
+
+  const handleApplyGridSize = () => {
+    resizeGrid(gridRows, gridCols, includeNumbers, allowDuplicates);
   };
 
   const handleDownloadPDF = async () => {
@@ -116,6 +124,9 @@ export default function App() {
         onNumCopiesChange={setNumCopies}
         onDownloadPDF={handleDownloadPDF}
         isGeneratingPDF={isGeneratingPDF}
+        totalLetters={letters.length}
+        gridRows={gridRows}
+        gridCols={gridCols}
       />
 
       <main className="flex-1 flex overflow-hidden">
@@ -128,6 +139,12 @@ export default function App() {
           onToggleNumbers={setIncludeNumbers}
           allowDuplicates={allowDuplicates}
           onToggleDuplicates={setAllowDuplicates}
+          gridRows={gridRows}
+          onGridRowsChange={setGridRows}
+          gridCols={gridCols}
+          onGridColsChange={setGridCols}
+          onApplyGridSize={handleApplyGridSize}
+          totalLetters={letters.length}
           presets={presets}
           onLoadPreset={handleLoadPreset}
           isSaving={isSaving}

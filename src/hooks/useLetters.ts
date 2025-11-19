@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Letter } from '../types';
 import { regeneratePattern } from '../utils/characterPool';
 
-export const useLetters = (initialGenerator: () => Letter[]) => {
+export const useLetters = (initialGenerator: (rows?: number, cols?: number) => Letter[]) => {
   const [letters, setLetters] = useState<Letter[]>(initialGenerator);
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -28,6 +28,23 @@ export const useLetters = (initialGenerator: () => Letter[]) => {
     setSelectedId(null);
   };
 
+  const resizeGrid = (rows: number, cols: number, includeNumbers: boolean, allowDuplicates: boolean) => {
+    const newLetters = initialGenerator(rows, cols);
+    const regenerated = regeneratePattern(newLetters, includeNumbers, allowDuplicates);
+
+    if (regenerated === null) {
+      alert(
+        `Cannot generate ${newLetters.length} unique characters. Pool only has ${
+          includeNumbers ? 36 : 26
+        } characters. Please enable "Allow Duplicates" or "Include Numbers".`
+      );
+      return;
+    }
+
+    setLetters(regenerated);
+    setSelectedId(null);
+  };
+
   const selectedLetter = letters.find((l) => l.id === selectedId);
 
   return {
@@ -37,6 +54,7 @@ export const useLetters = (initialGenerator: () => Letter[]) => {
     setSelectedId,
     updateLetter,
     regenerate,
+    resizeGrid,
     selectedLetter,
   };
 };
