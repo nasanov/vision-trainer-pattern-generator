@@ -110,7 +110,7 @@ export const Header = ({
 					disabled={isGeneratingPDF}
 				>
 					<Printer size={18} />
-					Print Layout
+					Print
 				</button>
 			</div>
 		</header>
