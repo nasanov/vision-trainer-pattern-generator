@@ -2,8 +2,8 @@
 
 A web-based application for generating customizable letter patterns for vision training exercises. Built with React 19 and Vite, this tool allows you to create, customize, and print A4 landscape patterns with various configuration options.
 
-![Application Screenshot](./docs/images/app-screenshot.png)
-*Main application interface - [Image to be added]*
+![Application Screenshot](./docs/images/home-screen.png)
+*Main application interface*
 
 ## Features
 
@@ -14,9 +14,6 @@ A web-based application for generating customizable letter patterns for vision t
 - **Duplicate Control**: Choose whether to allow duplicate characters in the pattern
 - **Instant Regeneration**: Quickly generate new patterns with a single click
 
-![Pattern Examples](./docs/images/pattern-examples.png)
-*Different pattern configurations - [Image to be added]*
-
 ### Visual Customization
 - **Adjustable Font Size**: Control the size of letters from 12pt to 72pt
 - **Font Family Selection**: Choose from multiple font families for optimal readability
@@ -24,16 +21,13 @@ A web-based application for generating customizable letter patterns for vision t
 - **Grid Toggle**: Show/hide alignment grid for precise positioning
 - **Center Fixation Point**: Optional fixation point for focused vision exercises
 
-![Customization Options](./docs/images/customization-panel.png)
-*Sidebar customization controls - [Image to be added]*
+![Customization Options](./docs/images/sidebar.gif)
+*Sidebar customization controls*
 
 ### Interactive Editing
 - **Drag and Drop**: Click and drag individual letters to reposition them
 - **Real-time Preview**: See changes instantly as you adjust settings
 - **Individual Letter Editing**: Modify specific letters' properties (font, size, color)
-
-![Drag and Drop Demo](./docs/images/drag-drop-demo.gif)
-*Interactive letter positioning - [Image to be added]*
 
 ### Preset Management
 - **Save Presets**: Store your favorite configurations for quick access
@@ -41,8 +35,8 @@ A web-based application for generating customizable letter patterns for vision t
 - **Delete Presets**: Remove presets you no longer need
 - **Local Storage**: All presets are saved locally in your browser
 
-![Preset Manager](./docs/images/preset-manager.png)
-*Preset management interface - [Image to be added]*
+![Preset Manager](./docs/images/preset-manager.gif)
+*Preset management interface*
 
 ### PDF Export & Printing
 - **Multi-Page PDF Generation**: Export 1-30 pages of randomly generated patterns in a single PDF
@@ -54,8 +48,8 @@ A web-based application for generating customizable letter patterns for vision t
 - **One-Click Print**: Built-in print functionality for current pattern
 - **Exact Color Reproduction**: Colors preserved in both PDF and print output
 
-![PDF Export](./docs/images/pdf-export.png)
-*PDF export with progress indicator - [Image to be added]*
+![PDF Export](./docs/images/pattern-regeneration-export.gif)
+*PDF export with progress indicator*
 
 ## Getting Started
 
