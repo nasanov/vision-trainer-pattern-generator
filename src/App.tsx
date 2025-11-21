@@ -33,6 +33,9 @@ export default function App() {
 	const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 	const [pdfProgress, setPdfProgress] = useState({ current: 0, total: 0 });
 
+	// Multi-page print state
+	const [printPages, setPrintPages] = useState<Array<typeof letters>>([]);
+
 	// Custom hooks
 	const { letters, setLetters, selectedId, setSelectedId, updateLetter, regenerate, resizeGrid, selectedLetter } =
 		useLetters(generateGridLetters);
@@ -57,9 +60,68 @@ export default function App() {
 		setSelectedId
 	);
 
+	// Helper function to generate unique letters while maintaining positions
+	const generateUniqueLetters = (templateLetters: typeof letters) => {
+		const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		const numbers = '0123456789';
+		const availableChars = includeNumbers ? alphabet + numbers : alphabet;
+
+		return templateLetters.map((letter, index) => {
+			let newChar: string;
+			if (allowDuplicates) {
+				// Randomly pick any character
+				newChar = availableChars[Math.floor(Math.random() * availableChars.length)];
+			} else {
+				// Pick unique character (avoid duplicates within this page)
+				const usedChars = new Set(templateLetters.slice(0, index).map(l => l.char));
+				const available = availableChars.split('').filter(c => !usedChars.has(c));
+				if (available.length === 0) {
+					// Fallback if we run out of unique characters
+					newChar = availableChars[Math.floor(Math.random() * availableChars.length)];
+				} else {
+					newChar = available[Math.floor(Math.random() * available.length)];
+				}
+			}
+
+			return {
+				...letter,
+				char: newChar,
+			};
+		});
+	};
+
 	// Handlers
 	const handlePrint = () => {
-		window.print();
+		if (numCopies < 1 || numCopies > 30) {
+			alert('Please enter a number between 1 and 30 pages.');
+			return;
+		}
+
+		// If only 1 copy, just print normally
+		if (numCopies === 1) {
+			setPrintPages([]);
+			setTimeout(() => window.print(), 50);
+			return;
+		}
+
+		// For multiple copies, generate all unique pages (excluding the visible page)
+		const pages: Array<typeof letters> = [];
+
+		// Generate unique pages with same positions but different letters
+		// Start from 1 because page 0 is the currently visible canvas
+		for (let i = 1; i < numCopies; i++) {
+			const newLetters = generateUniqueLetters(letters);
+			pages.push(newLetters);
+		}
+
+		setPrintPages(pages);
+
+		// Wait for DOM to update, then print
+		setTimeout(() => {
+			window.print();
+			// Clear print pages after print dialog closes
+			setTimeout(() => setPrintPages([]), 100);
+		}, 100);
 	};
 
 	const updatePageSetting = (key: keyof PageSettings, value: string) => {
@@ -197,8 +259,65 @@ export default function App() {
 
 				<ProgressModal isOpen={isGeneratingPDF} current={pdfProgress.current} total={pdfProgress.total} />
 
+				{/* Additional pages for multi-page printing */}
+				{printPages.length > 0 && (
+					<div className="print-only">
+						{printPages.map((pageLetters, index) => (
+							<div key={index} className="print-page" style={{ pageBreakAfter: 'always' }}>
+								<div
+									style={{
+										width: `${orientation === 'landscape' ? 297 : 210}mm`,
+										height: `${orientation === 'landscape' ? 210 : 297}mm`,
+										backgroundColor: pageSettings.bgColor,
+										fontFamily: pageSettings.fontFamily,
+										color: pageSettings.textColor,
+										position: 'relative',
+									}}
+								>
+									{showFixation && (
+										<div
+											style={{
+												position: 'absolute',
+												left: '50%',
+												top: '50%',
+												transform: 'translate(-50%, -50%)',
+												width: '4mm',
+												height: '4mm',
+												borderRadius: '50%',
+												backgroundColor: pageSettings.textColor,
+											}}
+										/>
+									)}
+									{pageLetters.map(letter => (
+										<div
+											key={letter.id}
+											style={{
+												position: 'absolute',
+												left: `${letter.x}mm`,
+												top: `${letter.y}mm`,
+												fontSize: `${letter.fontSize}pt`,
+												fontFamily: pageSettings.fontFamily,
+												color: pageSettings.textColor,
+												userSelect: 'none',
+												transform: 'translate(-50%, -50%)',
+												fontWeight: 'bold',
+											}}
+										>
+											{letter.char}
+										</div>
+									))}
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+
 				{/* Global Styles for Print */}
 				<style>{`
+        .print-only {
+          display: none;
+        }
+
         @media print {
           @page {
             size: ${orientation};
@@ -208,15 +327,28 @@ export default function App() {
             background: white;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: visible !important;
           }
           .no-print {
             display: none !important;
+          }
+          .print-only {
+            display: block !important;
+          }
+          .print-page {
+            page-break-after: always;
+            page-break-inside: avoid;
+            margin: 0;
+            padding: 0;
+          }
+          .print-page:last-child {
+            page-break-after: auto;
           }
           main {
             display: block;
             overflow: visible;
             background: white;
+            page-break-after: ${printPages.length > 0 ? 'always' : 'auto'};
           }
           div[class*="flex-1"] {
             overflow: visible !important;
