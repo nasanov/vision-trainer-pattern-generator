@@ -32,7 +32,7 @@ export const Canvas = ({
   return (
     <div
       ref={paperRef}
-      className="shadow-2xl relative transition-transform origin-top shrink-0 m-auto"
+      className="shadow-2xl relative transition-transform origin-top shrink-0 mx-auto my-8"
       style={{
         width: `${width}mm`,
         height: `${height}mm`,
