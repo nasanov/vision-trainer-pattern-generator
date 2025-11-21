@@ -1,4 +1,4 @@
-import { Printer, Grid, RotateCcw, ScanEye, Download, RotateCw } from 'lucide-react';
+import { Printer, Grid, RotateCcw, ScanEye, RotateCw } from 'lucide-react';
 import type { Orientation } from '../utils/constants';
 
 type HeaderProps = {
@@ -8,8 +8,6 @@ type HeaderProps = {
 	onPrint: () => void;
 	numCopies: number;
 	onNumCopiesChange: (value: number) => void;
-	onDownloadPDF: () => void;
-	isGeneratingPDF: boolean;
 	totalLetters?: number;
 	gridRows?: number;
 	gridCols?: number;
@@ -25,8 +23,6 @@ export const Header = ({
 	onPrint,
 	numCopies,
 	onNumCopiesChange,
-	onDownloadPDF,
-	isGeneratingPDF,
 	totalLetters = 28,
 	gridRows = 4,
 	gridCols = 7,
@@ -83,22 +79,12 @@ export const Header = ({
 						value={numCopies}
 						onChange={e => onNumCopiesChange(Math.min(30, Math.max(1, parseInt(e.target.value) || 1)))}
 						className="w-16 px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-						disabled={isGeneratingPDF}
 					/>
 				</div>
 
 				<button
-					onClick={onDownloadPDF}
-					className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 shadow-sm transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-					disabled={isGeneratingPDF}
-				>
-					<Download size={18} />
-					{isGeneratingPDF ? 'Generating...' : 'Download PDF'}
-				</button>
-				<button
 					onClick={onRegeneratePattern}
 					className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm transition-colors font-medium"
-					disabled={isGeneratingPDF}
 				>
 					<RotateCcw size={18} />
 					Regenerate Pattern
@@ -107,7 +93,6 @@ export const Header = ({
 				<button
 					onClick={onPrint}
 					className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm transition-colors font-medium"
-					disabled={isGeneratingPDF}
 				>
 					<Printer size={18} />
 					Print
