@@ -118,12 +118,12 @@ export const generateHelloWorldLetters = (orientation: Orientation = 'landscape'
     }
   };
 
-  // Position HELLO at top (1/4 from top)
-  const topY = centerY / 2;
+  // Position HELLO at top (moved higher)
+  const topY = centerY / 2 - 20; // 20mm higher
   generateWord('HELLO', topY);
 
-  // Position WORLD at bottom (3/4 from top)
-  const bottomY = centerY + (centerY / 2);
+  // Position WORLD at bottom (moved higher)
+  const bottomY = centerY + (centerY / 2) - 20; // 20mm higher
   generateWord('WORLD', bottomY);
 
   return letters;
