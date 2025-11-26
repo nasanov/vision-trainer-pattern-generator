@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Analytics } from '@vercel/analytics';
+import { Analytics } from '@vercel/analytics/react';
 import type { PageSettings } from './types';
 import { generateGridLetters } from './generators/gridGenerator';
 import { useLetters } from './hooks/useLetters';
